@@ -82,10 +82,11 @@ const Dialogue = () => {
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImageBase64(reader.result);  // Set Base64 string of the image
+      const base64String = reader.result.split(',')[1];  // Extract the base64 part of the string
+      setImageBase64(base64String);  // Set Base64 string of the image
+      setInputs({ ...inputs, imageData: base64String });  // Store the Base64 string in inputs.imageData
     };
     reader.readAsDataURL(file);  // Convert image to Base64
-    setInputs({ ...inputs, imageData: file });
   }
 };
 

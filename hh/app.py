@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 import openai
 from flask_cors import CORS
+import test_model as model
 
 medications_by_issue = {
     "respiratory": {
@@ -61,10 +62,9 @@ ISSUE_TYPES = {
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for cross-origin requests
 
-@app.route('/getmodel/image/', methods = ['GET'])
-# Assume this function gives you a confidence value for image
 def get_image_confidence(image_data):
-    return 0.8  # Placeholder confidence value (you can replace this with real logic)
+    x = model.predict_image_base64(image_data)
+    return x # Placeholder confidence value (you can replace this with real logic)
 
 @app.route('/getmodel/audio/', methods = ['GET'])
 # Assume this function gives you a confidence value for audio
@@ -92,7 +92,7 @@ def diagnose():
 
         # Confidence logic and OpenAI API call...
         confidence = get_image_confidence(image_data) if imageBool else get_audio_confidence(audio_data)
-        openai.api_key = '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'
+        openai.api_key = 'sk-proj-UHWdbLgrYOa_WnR8DxO7_HU75Lpc1_kf9yKMDU_HOprUVWe32lb-C2IYnBmGgE8_jvuFaKE_taT3BlbkFJPWlgWbCTHMl1rs14460aFESBo99ljJu2pjpflQ36is-63xkzRpq08U0vi9klprXhOY9exB79AA'
         prompt = f"""
         Role:
         You are an objective AI doctor and will be needing to give a diagnoses to a patient. You need to respond to this as if you are
