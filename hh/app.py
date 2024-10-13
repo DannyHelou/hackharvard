@@ -92,7 +92,7 @@ def diagnose():
 
         # Confidence logic and OpenAI API call...
         confidence = get_image_confidence(image_data) if imageBool else get_audio_confidence(audio_data)
-        openai.api_key = 'sk-proj-UHWdbLgrYOa_WnR8DxO7_HU75Lpc1_kf9yKMDU_HOprUVWe32lb-C2IYnBmGgE8_jvuFaKE_taT3BlbkFJPWlgWbCTHMl1rs14460aFESBo99ljJu2pjpflQ36is-63xkzRpq08U0vi9klprXhOY9exB79AA'
+        #USE OPENAI API KEY HERE, OTHERWISE WILL NOT WORK
         prompt = f"""
         Role:
         You are an objective AI doctor and will be needing to give a diagnoses to a patient. You need to respond to this as if you are
