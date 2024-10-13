@@ -31,3 +31,5 @@ pandas
 flask
 flask-cors
 matplotlib
+librosa
+pydub
