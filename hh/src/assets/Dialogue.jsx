@@ -19,6 +19,7 @@ const Dialogue = () => {
   const [loading, setLoading] = useState(false);  // To track loading state
   const [error, setError] = useState(null);       // To track errors
   const [imageBase64, setImageBase64] = useState(null); // to save image
+  const [audioBase64, setAudioBase64] = useState(null); // to save image
 
   // Function to handle input changes
   const handleInputChange = (e) => {
@@ -54,7 +55,8 @@ const Dialogue = () => {
       audioData: inputs.audioData,
       imageData: inputs.imageData,
       painScale: inputs.painScale,
-      imageBool: inputs.imageBool // Ensure this is sent correctly
+      imageBool: inputs.imageBool, 
+      audioBool: inputs.audioBool// Ensure this is sent correctly
     };
 
     try {
@@ -74,6 +76,19 @@ const Dialogue = () => {
     } finally {
       setLoading(false); // End loading
     }
+};
+
+const handleAudioChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result.split(',')[1];  // Extract the Base64 part of the string
+      setAudioBase64(base64String);  // Set Base64 string of the audio
+      setInputs({ ...inputs, audioData: base64String });  // Store the Base64 string in inputs.audioData
+    };
+    reader.readAsDataURL(file);  // Convert audio file to Base64
+  }
 };
 
  // Function to handle image upload and convert it to Base64
@@ -199,7 +214,7 @@ const generatePDF = () => {
             type="file"
             name="audioData"
             accept="audio/*"
-            onChange={(e) => setInputs({ ...inputs, audioData: e.target.files[0] })}
+            onChange={handleAudioChange}
           />
           <button onClick={() => setStep(4)}>Next</button>
         </div>

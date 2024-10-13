@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import openai
 from flask_cors import CORS
 import test_model as model
+import audio_model as model_audio
 
 medications_by_issue = {
     "respiratory": {
@@ -64,12 +65,11 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for cross-orig
 
 def get_image_confidence(image_data):
     x = model.predict_image_base64(image_data)
-    return x # Placeholder confidence value (you can replace this with real logic)
+    return x 
 
-@app.route('/getmodel/audio/', methods = ['GET'])
-# Assume this function gives you a confidence value for audio
-def get_audio_confidence(image_data):
-    return 0.8  # Placeholder confidence value (you can replace this with real logic)
+def get_audio_confidence(audio_data):
+    x = model_audio.predict_audio_base64(audio_data)
+    return x 
 
 @app.route('/api/diagnose', methods=['POST'])
 def diagnose():
@@ -92,7 +92,7 @@ def diagnose():
 
         # Confidence logic and OpenAI API call...
         confidence = get_image_confidence(image_data) if imageBool else get_audio_confidence(audio_data)
-        #USE OPENAI API KEY HERE, OTHERWISE WILL NOT WORK
+        openai.api_key = "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"
         prompt = f"""
         Role:
         You are an objective AI doctor and will be needing to give a diagnoses to a patient. You need to respond to this as if you are
@@ -112,7 +112,12 @@ def diagnose():
 
         I need you to provide a Diagnosis in a an easy to read format that addresses all of the following, each on a new line:
         1) Severity: You must tell the patient how severe their damage based on the confidence value. 
-        It should be something along the lines of: Low, Medium, High. You should also address any possible link with previous illnesses.
+        It should be something along the lines of: Low, Low to Medium, Medium, Medium to High, High. You should also address any possible link with previous illnesses.
+        If the confidence value is around 0.25 or below, then the severity should be low;
+        if the confidence value is between 0.25 to 0.4, then the severity should be low to medium;
+        if the confidence value is between 0.4 to 0.6, then the severity should be medium;
+        if the confidence value is between 0.6 to 0.75, then the severity should be medium to high;
+        if the confidence value is between 0.75 to 1, then severity should be high.
         
         2) Medical Issue: You must give possible plausible problems/assessments that the patient might be facing based on the severity, body parts, duration and pain level they feel.
         This must be given for each assessment in the format of:
