@@ -4,3 +4,41 @@
   padding: 2rem;
   text-align: center;
 }
+
+.user-select-screen {
+  text-align: center;
+  background-color: #141414;
+  color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-container {
+  display: flex;
+  gap: 20px;
+}
+
+.user-box {
+  width: 150px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.user-box:hover {
+  transform: scale(1.1);
+}
+
+.user-box img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+
+body {
+  /* font-family: 'Press Start 2P', cursive; */
+  font-family: 'VT323', monospace;
+  
+}

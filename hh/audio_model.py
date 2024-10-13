@@ -8,11 +8,9 @@ def predict_audio_base64(audio_base64):
 
     audio_data = base64.b64decode(audio_base64) 
     audio_io = io.BytesIO(audio_data)
-    
-    # Step 2: Convert the audio data into raw format using pydub
+
     audio = AudioSegment.from_mp3(audio_io)
-    
-    # Step 3: Convert the raw audio to NumPy array for analysis
+
     y = np.array(audio.get_array_of_samples(), dtype=np.float32)
 
     # Normalize the audio based on sample width
@@ -36,8 +34,7 @@ def predict_audio_base64(audio_base64):
     # Step 6: Calculate confidence values
     # You can adjust these thresholds based on your needs
     decibel_threshold = -85  # Threshold for general loudness
-    
+
     decibel_confidence = min(average_decibel / decibel_threshold, 1.0)
 
     return decibel_confidence
-

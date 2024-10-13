@@ -50,6 +50,6 @@ def predict_image_base64(image_base64):
 # # Example use case
 # if __name__ == '__main__':
 #     # Example Base64 string (replace with the actual Base64 image string from your React app)
-#     image_base64 = '<your_base64_string_here>'
+#     image_base64 = "."
 #     result = predict_image_base64(image_base64)
 #     print(f'The model predicts: {result}')

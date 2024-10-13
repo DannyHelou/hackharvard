@@ -2,7 +2,22 @@ from flask import Flask, jsonify, request
 import openai
 from flask_cors import CORS
 import test_model as model
+import json
+from datetime import datetime
 import audio_model as model_audio
+
+# Dummy user data for login (in real applications, store this in a database)
+users = {
+    "user@example.com": {
+        "password": "password123"
+    },
+    "user@gmail.com": {
+        "password": "password123"
+    },
+    "johnharvard@gmail.com": {
+        "password": "letmeinplease123"
+    }
+}
 
 medications_by_issue = {
     "respiratory": {
@@ -61,15 +76,17 @@ ISSUE_TYPES = {
     return "general" '''
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for cross-origin requests
+CORS(app)  # Enable CORS for cross-origin requests
 
 def get_image_confidence(image_data):
     x = model.predict_image_base64(image_data)
-    return x 
+    return x # Placeholder confidence value (you can replace this with real logic)
 
-def get_audio_confidence(audio_data):
-    x = model_audio.predict_audio_base64(audio_data)
-    return x 
+
+# Assume this function gives you a confidence value for audio
+def get_audio_confidence(image_data):
+    x = model_audio.predict_audio_base64(image_data)
+    return x # Placeholder confidence value (you can replace this with real logic)
 
 @app.route('/api/diagnose', methods=['POST'])
 def diagnose():
@@ -92,7 +109,7 @@ def diagnose():
 
         # Confidence logic and OpenAI API call...
         confidence = get_image_confidence(image_data) if imageBool else get_audio_confidence(audio_data)
-        openai.api_key = "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"
+        openai.api_key = "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"
         prompt = f"""
         Role:
         You are an objective AI doctor and will be needing to give a diagnoses to a patient. You need to respond to this as if you are
@@ -146,17 +163,76 @@ def diagnose():
 
         gpt_response = response.choices[0].message.content
         print(gpt_response)
+        # Dump to JSON file
+        import json
+        from datetime import datetime
+
+        diagnosis_data = {
+            "date": str(datetime.now()).split(" ")[0],
+            "diagnosis": description
+        }
+
+        try:
+            with open('appointments.json', 'r') as json_file:
+                diagnosis_log = json.load(json_file)
+        except FileNotFoundError:
+            diagnosis_log = []
+
+        # Append new data
+        diagnosis_log.append(diagnosis_data)
+
+        # Write updated data back to file
+        with open('appointments.json', 'w') as json_file:
+            json.dump(diagnosis_log, json_file, indent=4)
+
         return jsonify({'diagnosis': gpt_response})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+    
+#LOGIN PAGE
+    
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    # Check if the email exists in users and the password matches
+    if email in users and users[email]['password'] == password:
+        return jsonify({"success": True, "message": "Login successful!"})
+    else:
+        return jsonify({"success": False, "message": "Invalid email or password."}), 401
+
+#USER SELECT SCREEN
+
+user_info = [
+    {"id": 1, "name": "John Harvard", "profilePic": "you_icon.png", "user_metrics": {"height": 167, "weight": 168, "allergies": []}, "appointments": []}
+]
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    return jsonify(user_info)
+
+@app.route('/user/1', methods=['POST'])
+def get_user():
+    user = user_info[0]
+    return jsonify(user)
+
+#USER PROFILE SCREEN
+
+@app.route('/user/1/appointments', methods=['POST'])
+def get_appointments():
+    try:
+        with open('appointments.json', 'r') as json_file:
+            appointments = json.load(json_file)
+        return jsonify(appointments)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return jsonify([])
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 # @app.route('/test', methods=['GET'])
 # def test():
 #     return jsonify(message="Hello from Flask!")
-
-if __name__ == '__main__':
-    app.run(debug=True)

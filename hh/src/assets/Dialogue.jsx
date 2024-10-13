@@ -55,8 +55,7 @@ const Dialogue = () => {
       audioData: inputs.audioData,
       imageData: inputs.imageData,
       painScale: inputs.painScale,
-      imageBool: inputs.imageBool, 
-      audioBool: inputs.audioBool// Ensure this is sent correctly
+      imageBool: inputs.imageBool // Ensure this is sent correctly
     };
 
     try {
@@ -78,19 +77,6 @@ const Dialogue = () => {
     }
 };
 
-const handleAudioChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result.split(',')[1];  // Extract the Base64 part of the string
-      setAudioBase64(base64String);  // Set Base64 string of the audio
-      setInputs({ ...inputs, audioData: base64String });  // Store the Base64 string in inputs.audioData
-    };
-    reader.readAsDataURL(file);  // Convert audio file to Base64
-  }
-};
-
  // Function to handle image upload and convert it to Base64
  const handleImageChange = (e) => {
   const file = e.target.files[0];
@@ -102,6 +88,19 @@ const handleAudioChange = (e) => {
       setInputs({ ...inputs, imageData: base64String });  // Store the Base64 string in inputs.imageData
     };
     reader.readAsDataURL(file);  // Convert image to Base64
+  }
+};
+
+const handleAudioChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result.split(',')[1];  // Extract the Base64 part of the string
+      setAudioBase64(base64String);  // Set Base64 string of the audio
+      setInputs({ ...inputs, audioData: base64String });  // Store the Base64 string in inputs.audioData
+    };
+    reader.readAsDataURL(file);  // Convert audio file to Base64
   }
 };
 
@@ -168,7 +167,7 @@ const generatePDF = () => {
       {step === 0 && (
         <div className="dialogue-box">
           <p>Hello there, what happened? It seems like you have something with [hand, leg, face, etc].</p>
-          <select name="bodyPart" value={inputs.bodyPart} onChange={handleBodyPartChange}>
+          <select name="bodyPart" value={inputs.bodyPart} onChange={handleBodyPartChange} className="selection-box-talk">
             <option value="">Select affected body part</option>
             <option value="hand">Hand</option>
             <option value="leg">Leg</option>
@@ -182,12 +181,13 @@ const generatePDF = () => {
       {step === 1 && (
         <div className="dialogue-box">
           <p>Can you describe your symptoms?</p>
-          <input
+          <textarea
             type="text"
             name="description"
             value={inputs.description}
             onChange={handleInputChange}
             placeholder="Describe your symptoms"
+            className = "text-box"
           />
           <button onClick={() => setStep(2)}>Next</button>
         </div>
@@ -202,12 +202,13 @@ const generatePDF = () => {
             value={inputs.duration}
             onChange={handleInputChange}
             placeholder="Enter duration (e.g., 2 days)"
+            className = "text-box-short"
           />
           <button onClick={() => setStep(3)}>Next</button>
         </div>
       )}
 
-      {step === 3 && inputs.audioBool && (
+{step === 3 && inputs.audioBool && (
         <div className="dialogue-box">
           <p>Please record your cough or voice.</p>
           <input
@@ -215,6 +216,7 @@ const generatePDF = () => {
             name="audioData"
             accept="audio/*"
             onChange={handleAudioChange}
+            className='text-box-short'
           />
           <button onClick={() => setStep(4)}>Next</button>
         </div>
@@ -228,21 +230,28 @@ const generatePDF = () => {
             name="imageData"
             accept="image/*"
             onChange={handleImageChange}
+            className = "text-box-short"
           />
           <button onClick={() => setStep(4)}>Next</button>
         </div>
       )}
 
       {step === 4 && (
-        <div className="dialogue-box">
+        <div className="dialogue-box scale">
           <p>On a scale from 1-10, how much does it hurt when you touch the area?</p>
           <input
-            type="number"
+            type="range"
+            min="1"
+            max="10"
+            step="1"
+            
             name="painScale"
             value={inputs.painScale}
             onChange={handleInputChange}
             placeholder="Pain scale (1-10)"
+            className = "text-box-short"
           />
+          <p className='pain-status'>Selected pain level: {inputs.painScale}</p>
           <button onClick={handleSubmit}>Submit</button>
         </div>
       )}
