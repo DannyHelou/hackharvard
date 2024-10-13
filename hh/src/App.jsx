@@ -1,10 +1,10 @@
 import React from 'react';
-import TestComponent from 'src/assets/';
+import Dialogue from './assets/Dialogue';
 
 function App() {
   return (
     <div>
-      <TestComponent />
+      <Dialogue />
     </div>
   );
 }
