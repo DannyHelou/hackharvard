@@ -1,1 +1,1 @@
-Acts as your own personal doctor for home usage -> could later be scaled into hospital use for minor injuries -> uses basic image classification build ontop of a tuned MNIST dataset -> react front end python backend with flask integration.
+Acts as your own personal doctor for home usage -> could later be scaled into hospital use for minor external injuries and skin growths + masses -> uses basic image classification build ontop of a tuned MNIST dataset -> react front end python backend with flask integration.
